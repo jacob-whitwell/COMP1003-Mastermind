@@ -8,13 +8,20 @@ namespace COMP1003_Mastermind
         private bool gameActive = false;
         private bool gameQuit = false;
 
+        private int blackGuessCount = 0;
+        private int whiteGuessCount = 0;
+        private int loopCount = 0;
+        string guess = null;
+
         private int positionChosen = 0;
         private int colourChosen = 0;
 
-        private int userGuess = 0;
-
         private int[] positionArray = new int[0];
-        private int[] secretColourArray = new int[0];
+        //private string[] secretArray = new string[0];
+
+        List<string> secretList = new List<string>();
+        List<string> missedGuessList = new List<string>();
+        List<string> guessList = new List<string>();
 
         public void GameSetup()
         {
@@ -55,21 +62,24 @@ namespace COMP1003_Mastermind
                 }
             }
 
-
-            int[] positionArray = new int[positionChosen];
-            int[] secretColourArray = new int[colourChosen];
+            string[] positionArray = new string[positionChosen];
 
             Console.WriteLine($"\nYou have chosen to play with {positionChosen} positions and {colourChosen} colours.\n");
 
             for (int i = 0; i < positionArray.Length; i++)
             {
                 Random r = new Random();
-                positionArray[i] = r.Next(1, 7);
+                positionArray[i] = r.Next(1, colourChosen + 1).ToString();
                 Console.WriteLine($"Position {i + 1}: {positionArray[i]}");
             }
 
+            for (int i = 0; i < positionArray.Length; i++)
+            {
+                //Console.WriteLine(positionArray[i]);
+                secretList.Add(positionArray[i].ToString());
+                //secretnums += positionArray[i] + " ";
+            }
 
-            Console.WriteLine("The game is now configured. Type \"start\" to start the game.");
             ReadUserInput();
         }
 
@@ -101,51 +111,15 @@ namespace COMP1003_Mastermind
 
         public void GameLoop()
         {
-            Console.WriteLine($"Please input a guess between 1 and {colourChosen}");
-            ReadUserInput();
-        }
-
-        public void BlackGuess()
-        {
-
-        }
-
-        static void Main(string[] args)
-        {
-            Mastermind mastermind = new Mastermind();
-            mastermind.GameSetup();
-
-            
-            while (mastermind.gameActive && mastermind.gameQuit == false)
-            {
-                mastermind.GameLoop();
-            }
-
-
+            blackGuessCount = 0;
+            whiteGuessCount = 0;
             // Init the array/list to use
-            string[] secretArray = { "1", "2", "3", "3" };
-            List<string> secretList = new List<string>();
-            List<string> missedGuessList = new List<string>();
-            List<string> guessList = new List<string>();
             string secretnums = null;
-
-            // Printing the loop for debug
-
-            for (int i = 0; i < secretArray.Length; i++)
-            {
-                secretList.Add(secretArray[i]);
-                secretnums += secretArray[i] + " ";
-            }
-
-            Console.WriteLine($"Secret numbers are: {secretnums}");
-
-            // Init the variables to count
-            int blackGuessCount = 0;
-            int whiteGuessCount = 0;
-            int indexCounter = 0;
+            //int secretLength = secretList.Count;
             int loopCount = 0;
-            int secretLength = secretList.Count;
-            string guess = null;
+            // Printing the loop for debug
+            // Init the variables to count
+
 
             while (loopCount < secretList.Count)
             {
@@ -159,7 +133,8 @@ namespace COMP1003_Mastermind
                     blackGuessCount++;
                     secretList.Remove(secretList[loopCount]);
                     continue;
-                } else
+                }
+                else
                 {
                     // If the number is NOT there, add it to a separate list for processing white guesses later
                     missedGuessList.Add(guess);
@@ -167,26 +142,6 @@ namespace COMP1003_Mastermind
 
                 loopCount++;
             }
-
-            if (secretList.Count == 0)
-            {
-                Console.WriteLine("\nList is now empty");
-            }
-            else
-            { 
-                // Printing out the ramining numbers within the list
-                //Console.Write($"\nSecret numbers reamining: {secretList.Count}. Remaining: ");
-                for (int i = 0; i < secretList.Count; i++)
-                {
-                    //Console.Write(secretList[i] + " ");
-                }
-            }
-
-            /*Console.Write("\nMissed guesses list: ");
-            for (int i = 0; i < missedGuessList.Count; i++)
-            {
-                Console.Write($"{missedGuessList[i]} ");
-            }*/
 
             for (int i = 0; i < secretList.Count; i++)
             {
@@ -198,96 +153,30 @@ namespace COMP1003_Mastermind
                 }
             }
 
+            if (secretList.Count == 0)
+            {
+                Console.WriteLine("\nList is now empty");
+                gameActive = false;
+            }
 
             Console.WriteLine($"\nBlack guesses: {blackGuessCount}");
             Console.WriteLine($"White guesses: {whiteGuessCount}");
+        }
 
+        private void AssignLists()
+        {
 
+        }
 
+        static void Main(string[] args)
+        {
+            Mastermind mastermind = new Mastermind();
+            mastermind.GameSetup();
 
-
-
-
-
-
-
-
-
-
-
-            /*while (indexCounter < secretLength && secretList.Count != 0)
+            while (mastermind.gameActive && mastermind.gameQuit == false)
             {
-                // Console.WriteLine("\nChecking index: " + indexCounter);
-                if (secretList.Count == 0 || indexCounter >= secretList.Count)
-                {
-                    break;
-                }
-
-                string guess = null;
-
-                Console.Write("User guess:");
-                
-                guess = Console.ReadLine();
-                guessList.Add(guess);
-
-                Console.WriteLine("index: " + indexCounter);
-
-                while (loopCount < secretList.Count)
-                {
-                    // If guess is 1, and secretList[0] == 1, add to black guess and then remove the list item
-                    if (guess == secretList[indexCounter])
-                    {
-                        blackGuessCount++;
-                        //secretList.RemoveAt(indexCounter);
-                        // Continue so that the index doesn't go up after a correct guess and removing the index
-                        Console.WriteLine();
-                        loopCount++;
-                        continue;
-                    }
-                    loopCount++;
-                }
-                
-
-                while (loopCount < secretList.Count)
-                {
-                    if (secretList.Contains(guess))
-                    {
-                        secretList.Remove(guess);
-                        whiteGuessCount++;
-                    }
-                    loopCount++;
-                }
-
-
-                indexCounter++;
-
-                *//*for (int i = 0; i < secretList.Count; i++)
-                {
-                    if (secretList.Contains(guess))
-                    {
-                        secretList.Remove(guess);
-                    }
-                    Console.WriteLine($"\nThe items left in the list are: {secretList[i]} - index ({i})");
-                }*//*
+                mastermind.GameLoop();
             }
-
-            Console.WriteLine($"Secret numbers are:\n{secretnums}");
-
-            Console.WriteLine("Guessed this turn:");
-            for(int i = 0; i < guessList.Count; i++)
-            {
-                Console.Write(guessList[i] + " ");
-
-            }
-
-            Console.WriteLine("\nUnguessed Secret List Remaining:");
-            for (int i = 0; i < secretList.Count; i++)
-            {
-                Console.Write(secretList[i] + " ");
-            }
-
-            Console.WriteLine("\nBlack: " + blackGuessCount);
-            Console.WriteLine("White: " + whiteGuessCount);*/
 
         }
     }
