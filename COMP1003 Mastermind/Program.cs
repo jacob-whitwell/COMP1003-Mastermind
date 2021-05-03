@@ -20,12 +20,12 @@ namespace COMP1003_Mastermind
         //private string[] secretArray = new string[0];
 
         List<string> secretList = new List<string>();
+        List<string> resetList = new List<string>();
         List<string> missedGuessList = new List<string>();
         List<string> guessList = new List<string>();
 
         public void GameSetup()
         {
-
             // Player chooses how many positions to play between 1 and 9
             while (positionChosen <= 0 || positionChosen > 9)
             {
@@ -75,9 +75,8 @@ namespace COMP1003_Mastermind
 
             for (int i = 0; i < positionArray.Length; i++)
             {
-                //Console.WriteLine(positionArray[i]);
                 secretList.Add(positionArray[i].ToString());
-                //secretnums += positionArray[i] + " ";
+                resetList.Add(positionArray[i].ToString());
             }
 
             ReadUserInput();
@@ -113,13 +112,7 @@ namespace COMP1003_Mastermind
         {
             blackGuessCount = 0;
             whiteGuessCount = 0;
-            // Init the array/list to use
-            string secretnums = null;
-            //int secretLength = secretList.Count;
             int loopCount = 0;
-            // Printing the loop for debug
-            // Init the variables to count
-
 
             while (loopCount < secretList.Count)
             {
@@ -139,7 +132,6 @@ namespace COMP1003_Mastermind
                     // If the number is NOT there, add it to a separate list for processing white guesses later
                     missedGuessList.Add(guess);
                 }
-
                 loopCount++;
             }
 
@@ -152,19 +144,32 @@ namespace COMP1003_Mastermind
                     whiteGuessCount++;
                 }
             }
+            Console.WriteLine($"\nBlack guesses: {blackGuessCount}");
+            Console.WriteLine($"White guesses: {whiteGuessCount}");
+
+
+            if (secretList.Count != 0)
+            {
+                secretList.Clear();
+                for (int i = 0; i < resetList.Count; i++)
+                {
+                    missedGuessList.Clear();
+                    secretList.Add(resetList[i]);
+                    Console.WriteLine($"adding {resetList[i]}");
+                }
+                loopCount = 0;
+            }
 
             if (secretList.Count == 0)
             {
                 Console.WriteLine("\nList is now empty");
                 gameActive = false;
             }
-
-            Console.WriteLine($"\nBlack guesses: {blackGuessCount}");
-            Console.WriteLine($"White guesses: {whiteGuessCount}");
         }
 
-        private void AssignLists()
+        private void ResetLists()
         {
+                Console.WriteLine(resetList.Count);
 
         }
 
@@ -176,6 +181,7 @@ namespace COMP1003_Mastermind
             while (mastermind.gameActive && mastermind.gameQuit == false)
             {
                 mastermind.GameLoop();
+
             }
 
         }
