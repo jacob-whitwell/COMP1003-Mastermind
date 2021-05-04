@@ -24,6 +24,7 @@ namespace COMP1003_Mastermind
         List<string> missedGuessList = new List<string>();
         List<string> guessList = new List<string>();
 
+        ConsoleKeyInfo key;
         public void GameSetup()
         {
             // Player chooses how many positions to play between 1 and 9.
@@ -86,11 +87,6 @@ namespace COMP1003_Mastermind
 
             ReadUserInput();
             Console.Clear();
-            try
-            {
-                Console.SetCursorPosition(0, 0);
-            }
-            catch { }
         }
 
         // Used to process the users input
@@ -117,8 +113,6 @@ namespace COMP1003_Mastermind
                     return userInput;
                 }
             }
-
-            userInput = Console.ReadLine();
             return userInput;
         }
 
@@ -132,16 +126,33 @@ namespace COMP1003_Mastermind
 
             while (loopCount < secretList.Count)
             {
+
+                // Clear the console from the end of the "enter guess" line, so it doesn't overwrite old guess
+                try
+                {
+                    Console.SetCursorPosition(0, 0);
+                    Console.Write(new string(' ', Console.WindowWidth));
+                }
+                catch { }
+
+                try
+                {
+                    Console.SetCursorPosition(0, 0);
+                }
+                catch { }
                 //Console.Write($"Comparing: {secretList[loopCount]} with user guess: ");
                 //Console.Write($"Guess for position {positionGuessCount}: ");
-                if (loopCount == 0)
+                if (loopCount == 0 && secretList.Count == resetList.Count)
                 {
-                    Console.Write("Please enter your guess: ");
+                    //Console.Write("Please enter your guess: ");
                 }
+                Console.Write("Please enter your guess: ");
+                Console.Write(guessString);
                 guess = Console.ReadKey().KeyChar.ToString();
                 Console.Write(" ");
                 positionGuessCount++;
                 guessString += guess + " ";
+
                 // If the guess is correct (black), add it to the counter and then remove it from the secret list.
                 // This makes it so that you can't guess the same number multiple times.
                 if (guess == secretList[loopCount])
@@ -156,11 +167,10 @@ namespace COMP1003_Mastermind
                     missedGuessList.Add(guess);
                 }
 
-                
-
                 // Increasing the loop counter allows the game to check the next number in the array to check if it's a black guess.
                 loopCount++;
             }
+
             Console.WriteLine();
 
             // If the guess is in the list but in the wrong position, add to the white counter and remove from the list.
@@ -173,6 +183,7 @@ namespace COMP1003_Mastermind
                     whiteGuessCount++;
                 }
             }
+
             guessList.Add($"{guessString} Black: {blackGuessCount}. White: {whiteGuessCount}");
 
             for (int i = 0; i < guessList.Count; i++)
