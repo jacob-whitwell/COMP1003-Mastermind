@@ -11,7 +11,7 @@ namespace COMP1003_Mastermind
 
         private int blackGuessCount = 0;
         private int whiteGuessCount = 0;
-        private int loopCount = 0;
+        private int positionCounter = 0;
         private int failCounter = 0;
         string guess = null;
         string restart = null;
@@ -26,7 +26,6 @@ namespace COMP1003_Mastermind
         List<string> missedGuessList = new List<string>();
         List<string> guessList = new List<string>();
 
-        
         public void GameSetup()
         {
 
@@ -53,7 +52,7 @@ namespace COMP1003_Mastermind
                 }
             }
 
-        
+
 
             // Player chooses how many colours to play with between 1 and 6
             while (colourChosen <= 0 || colourChosen > 9)
@@ -69,7 +68,7 @@ namespace COMP1003_Mastermind
 
                 if (colourChosen <= 0 || colourChosen > 9)
                 {
-                    Console.WriteLine("Invalid number. Please choose a number between 1 and 6.\n");
+                    Console.WriteLine("Invalid number. Please choose a number between 1 and 9.\n");
                 }
             }
 
@@ -82,7 +81,6 @@ namespace COMP1003_Mastermind
             {
                 Random r = new Random();
                 positionArray[i] = r.Next(1, colourChosen + 1).ToString();
-                //Console.WriteLine($"Position {i + 1}: {positionArray[i]}");
             }
 
             // Fill the lists with the values: secretList is used within the game, resetList is used to restore values if guess unsuccessful.
@@ -143,7 +141,7 @@ namespace COMP1003_Mastermind
                 }
 
                 restart = Console.ReadLine();
-                
+
             }
 
             return userInput;
@@ -154,11 +152,11 @@ namespace COMP1003_Mastermind
             int positionGuessCount = 1;
             blackGuessCount = 0;
             whiteGuessCount = 0;
-            loopCount = 0;
+            positionCounter = 0;
             string guessString = null;
 
 
-            while (loopCount < secretList.Count)
+            while (positionCounter < secretList.Count)
             {
                 // Clear the console from the end of the "enter guess" line, so it doesn't overwrite old guess
                 try
@@ -173,10 +171,7 @@ namespace COMP1003_Mastermind
                     Console.SetCursorPosition(0, 0);
                 }
                 catch { }
-                
-                //Console.Write($"Comparing: {secretList[loopCount]} with user guess: ");
-                //Console.Write($"Guess for position {positionGuessCount}: ");
-                
+
                 // Get the user guesses
                 Console.Write("Please enter your guess: ");
                 Console.Write(guessString);
@@ -188,10 +183,10 @@ namespace COMP1003_Mastermind
 
                 // If the guess is correct (black), add it to the counter and then remove it from the secret list.
                 // This makes it so that you can't guess the same number multiple times.
-                if (guess == secretList[loopCount])
+                if (guess == secretList[positionCounter])
                 {
                     blackGuessCount++;
-                    secretList.Remove(secretList[loopCount]);
+                    secretList.Remove(secretList[positionCounter]);
                     continue;
                 }
                 else
@@ -200,11 +195,11 @@ namespace COMP1003_Mastermind
                     missedGuessList.Add(guess);
                 }
 
-                // Increasing the loop counter allows the game to check the next number in the array to check if it's a black guess.
-                loopCount++;
+                // Increasing the position counter allows the game to check the next number in the array to check if it's a black guess.
+                positionCounter++;
             }
-            failCounter++;
 
+            failCounter++;
 
             Console.WriteLine();
 
@@ -227,7 +222,7 @@ namespace COMP1003_Mastermind
 
             }
             Console.WriteLine();
- 
+
             // If the user hasn't emptied the list by correctly guessing
             // Reset the list and then add the values again to create a full list
             if (secretList.Count != 0)
@@ -238,17 +233,17 @@ namespace COMP1003_Mastermind
                     missedGuessList.Clear();
                     secretList.Add(resetList[i]);
                 }
-                loopCount = 0;
+                positionCounter = 0;
             }
 
             // Win condition when the list is empty
             if (secretList.Count == 0)
             {
-                
+
                 Console.WriteLine("Congratulations, you win!");
                 Console.WriteLine("Please enter \"y\" to restart or \"n\" to quit.");
                 restart = Console.ReadKey().KeyChar.ToString();
-                
+
                 if (restart == "y")
                 {
                     gameRestarted = true;
@@ -291,12 +286,12 @@ namespace COMP1003_Mastermind
             whiteGuessCount = 0;
             blackGuessCount = 0;
             failCounter = 0;
-            loopCount = 0;
+            positionCounter = 0;
             restart = null;
             GameSetup();
             GameLoop();
-    }
-
+        }
+    
     static void Main(string[] args)
         {
             Mastermind mastermind = new Mastermind();
@@ -309,27 +304,7 @@ namespace COMP1003_Mastermind
             }
 
             Console.WriteLine("Thank you for playing Mastermind. See you again next time!");
-            /*
-            string line = Console.ReadLine();
-            string[] lineArray = line.Split();
-            List<string> numStringList = new List<string>();
-            string numString = null;
-            for (int i = 0; i < lineArray.Length; i++)
-            {
-                Int32.TryParse(lineArray[i], out int num);
-
-                if (num > 0 && num < 9)
-                {
-                    numString += num;
-                }
-            }
-
-            string[] numStringSplit = numString.Split(" ");
-
-            for (int i = 0; i < numStringSplit.Length; i++)
-            {
-                numStringList.Add(numStringSplit[i]);
-            }*/
+            
         }
     }
 }
