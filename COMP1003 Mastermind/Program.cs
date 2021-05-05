@@ -12,7 +12,9 @@ namespace COMP1003_Mastermind
         private int blackGuessCount = 0;
         private int whiteGuessCount = 0;
         private int loopCount = 0;
+        private int failCounter = 0;
         string guess = null;
+        string restart = null;
 
         private int positionChosen = 0;
         private int colourChosen = 0;
@@ -24,9 +26,14 @@ namespace COMP1003_Mastermind
         List<string> missedGuessList = new List<string>();
         List<string> guessList = new List<string>();
 
-        ConsoleKeyInfo key;
+        
         public void GameSetup()
         {
+
+            Console.WriteLine("Welcome to Mastermind.\nIn this game, you must correctly guess the hidden numbers. " +
+                "For each correct number you guess in the correct place, you get one \"Black\" point, and each number you guess correctly but is " +
+                "in the wrong place, you get one \"White\" point.\nIf you do not guess the combination correctly within " +
+                "10 turns, you lose.\n");
             // Player chooses how many positions to play between 1 and 9.
             // Using ints makes this easier to ensure correct input is given
             while (positionChosen <= 0 || positionChosen > 9)
@@ -49,7 +56,7 @@ namespace COMP1003_Mastermind
         
 
             // Player chooses how many colours to play with between 1 and 6
-            while (colourChosen <= 0 || colourChosen > 6)
+            while (colourChosen <= 0 || colourChosen > 9)
             {
                 Console.Write("Choose how many colours to play with: ");
                 try
@@ -60,7 +67,7 @@ namespace COMP1003_Mastermind
                 {
                 }
 
-                if (colourChosen <= 0 || colourChosen > 6)
+                if (colourChosen <= 0 || colourChosen > 9)
                 {
                     Console.WriteLine("Invalid number. Please choose a number between 1 and 6.\n");
                 }
@@ -113,6 +120,32 @@ namespace COMP1003_Mastermind
                     return userInput;
                 }
             }
+
+
+            // Restart if the user wants to play again
+            string restart = Console.ReadLine();
+            while (restart != "y" || restart != "n")
+            {
+                Console.WriteLine("\nPlease enter either \"y\" or \"n\".");
+                if (restart == "y")
+                {
+                    Console.WriteLine($"restart: {restart}");
+                    gameRestarted = true;
+                    GameRestart();
+                    break;
+                }
+                else if (restart == "n")
+                {
+                    Console.WriteLine("\nThanks for playing!");
+                    gameQuit = true;
+                    gameActive = false;
+                    break;
+                }
+
+                restart = Console.ReadLine();
+                
+            }
+
             return userInput;
         }
 
@@ -121,12 +154,12 @@ namespace COMP1003_Mastermind
             int positionGuessCount = 1;
             blackGuessCount = 0;
             whiteGuessCount = 0;
-            int loopCount = 0;
+            loopCount = 0;
             string guessString = null;
+
 
             while (loopCount < secretList.Count)
             {
-
                 // Clear the console from the end of the "enter guess" line, so it doesn't overwrite old guess
                 try
                 {
@@ -140,16 +173,16 @@ namespace COMP1003_Mastermind
                     Console.SetCursorPosition(0, 0);
                 }
                 catch { }
+                
                 //Console.Write($"Comparing: {secretList[loopCount]} with user guess: ");
                 //Console.Write($"Guess for position {positionGuessCount}: ");
-                if (loopCount == 0 && secretList.Count == resetList.Count)
-                {
-                    //Console.Write("Please enter your guess: ");
-                }
+                
+                // Get the user guesses
                 Console.Write("Please enter your guess: ");
                 Console.Write(guessString);
                 guess = Console.ReadKey().KeyChar.ToString();
                 Console.Write(" ");
+
                 positionGuessCount++;
                 guessString += guess + " ";
 
@@ -170,6 +203,8 @@ namespace COMP1003_Mastermind
                 // Increasing the loop counter allows the game to check the next number in the array to check if it's a black guess.
                 loopCount++;
             }
+            failCounter++;
+
 
             Console.WriteLine();
 
@@ -188,13 +223,11 @@ namespace COMP1003_Mastermind
 
             for (int i = 0; i < guessList.Count; i++)
             {
-                Console.WriteLine($"Guess {i + 1} is: {guessList[i]}.");
+                Console.WriteLine($"Guess {i + 1} is: {guessList[i]}");
+
             }
             Console.WriteLine();
-            // Display the guesses to the user.
-            /* Console.WriteLine($"\nBlack guesses: {blackGuessCount}");
-             Console.WriteLine($"White guesses: {whiteGuessCount}");*/
-
+ 
             // If the user hasn't emptied the list by correctly guessing
             // Reset the list and then add the values again to create a full list
             if (secretList.Count != 0)
@@ -211,45 +244,92 @@ namespace COMP1003_Mastermind
             // Win condition when the list is empty
             if (secretList.Count == 0)
             {
+                
                 Console.WriteLine("Congratulations, you win!");
                 Console.WriteLine("Please enter \"y\" to restart or \"n\" to quit.");
-                string restart = Console.ReadLine();
+                restart = Console.ReadKey().KeyChar.ToString();
                 
                 if (restart == "y")
                 {
                     gameRestarted = true;
                     GameRestart();
+                } else if (restart == "n")
+                {
+                    gameActive = false;
+                    Console.WriteLine("Thanks for playing!");
+                } else if (restart != "y" || restart != "n")
+                {
+                    Console.WriteLine("Please enter either \"y\" or \"n\".");
                 }
-                
-                gameActive = false;
+            }
+
+            // Lose condition when guesses hit 10
+            if (failCounter == 10)
+            {
+                // Print the correct combination for the user to see
+                Console.WriteLine("Game over: you ran out of turns.\nThe combination was:");
+                for (int i = 0; i < resetList.Count; i++)
+                {
+                    Console.Write(resetList[i] + " ");
+                }
+
+                Console.WriteLine("\n\nWould you like to restart? Please enter \"y\" for yes, and \"n\" for no.");
+                ReadUserInput();
             }
         }
 
         // Resets the game variables so that the user can start again.
         private void GameRestart()
         {
+            Console.Clear();
+            secretList.Clear();
+            resetList.Clear();
+            missedGuessList.Clear();
+            guessList.Clear();
             colourChosen = 0;
             positionChosen = 0;
-            missedGuessList.Clear();
             whiteGuessCount = 0;
             blackGuessCount = 0;
+            failCounter = 0;
+            loopCount = 0;
+            restart = null;
             GameSetup();
             GameLoop();
-        }
+    }
 
-        static void Main(string[] args)
+    static void Main(string[] args)
         {
             Mastermind mastermind = new Mastermind();
             mastermind.GameSetup();
 
-
+            
             while (mastermind.gameActive && mastermind.gameQuit == false)
             {
                 mastermind.GameLoop();
             }
 
             Console.WriteLine("Thank you for playing Mastermind. See you again next time!");
+            /*
+            string line = Console.ReadLine();
+            string[] lineArray = line.Split();
+            List<string> numStringList = new List<string>();
+            string numString = null;
+            for (int i = 0; i < lineArray.Length; i++)
+            {
+                Int32.TryParse(lineArray[i], out int num);
 
+                if (num > 0 && num < 9)
+                {
+                    numString += num;
+                }
+            }
+
+            string[] numStringSplit = numString.Split(" ");
+
+            for (int i = 0; i < numStringSplit.Length; i++)
+            {
+                numStringList.Add(numStringSplit[i]);
+            }*/
         }
     }
 }
