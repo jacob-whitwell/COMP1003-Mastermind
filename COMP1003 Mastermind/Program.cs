@@ -176,7 +176,7 @@ namespace COMP1003_Mastermind
                 Console.Write("Please enter your guess: ");
                 Console.Write(guessString);
                 guess = Console.ReadKey().KeyChar.ToString();
-                Console.Write(" ");
+                //Console.Write(" ");
 
                 positionGuessCount++;
                 guessString += guess + " ";
@@ -228,11 +228,12 @@ namespace COMP1003_Mastermind
             if (secretList.Count != 0)
             {
                 secretList.Clear();
+                missedGuessList.Clear();
                 for (int i = 0; i < resetList.Count; i++)
                 {
-                    missedGuessList.Clear();
                     secretList.Add(resetList[i]);
                 }
+
                 positionCounter = 0;
             }
 
@@ -292,7 +293,7 @@ namespace COMP1003_Mastermind
             GameLoop();
         }
     
-    static void Main(string[] args)
+        static void Main(string[] args)
         {
             Mastermind mastermind = new Mastermind();
             mastermind.GameSetup();
